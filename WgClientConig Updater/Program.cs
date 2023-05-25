@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using CommandLine;
 
 namespace WgClientConig_Updater
@@ -8,39 +9,50 @@ namespace WgClientConig_Updater
     {
         public class Options
         {
-            [Option('p', "position", Required = false,Default =0)]
-            public int P { get; set; }
             [Option('i', "interface", Required = true)]
             public string I { get; set; }
         }
         static void Main(string[] args)
         {
-         int P = 0;
-        string I = "";
+
+            string Face = "";
             Parser.Default.ParseArguments<Options>(args)
                    .WithParsed<Options>(o =>
                    {
-                       P = o.P;
-                       I = o.I;
+
+                      Face = o.I;
                    });
-            IPNetwork ip = IPNetwork.Parse(GetIP(I,P) + "/56");
+            
+            string IPp = GetIP(Face);
+            IPNetwork ip = IPNetwork.Parse(IPp + "/56");
             String Pr = ip.Network.ToString();
-            if (Pr.Length >=5) Pr = Pr.Remove(Pr.Length - 4, 4) + "80";
+            if (Pr.Length >= 5) Pr = Pr.Remove(Pr.Length - 4, 4) + "80";
             Console.WriteLine(Pr);
         }
-        private static string GetIP(String Interface, int P)
+        private static string GetIP(String I)
         {
 
             NetworkInterface[] intf = NetworkInterface.GetAllNetworkInterfaces();
             foreach (NetworkInterface device in intf)
             {
-                if (device.Name == Interface)
+                if (device.Name.ToString() == I)
                 {
-                    return device.GetIPProperties().UnicastAddresses[P].Address.ToString();
+                    
+                    //return device.GetIPProperties().UnicastAddresses[P].Address.ToString();
+                    UnicastIPAddressInformationCollection ip = device.GetIPProperties().UnicastAddresses;
+                    foreach (UnicastIPAddressInformation addr in ip)
+                    {
+                        if (addr.Address.AddressFamily == AddressFamily.InterNetworkV6)
+                        {
+                            return addr.Address.ToString();
+                        }
+                       
+                    }
+                    
                 }
-
+                
             }
-            return "::";
+            return "::1";
         }
     }
 }
