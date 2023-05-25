@@ -1,14 +1,10 @@
-﻿
-
-
-using System.Net;
+﻿using System.Net;
 using System.Net.NetworkInformation;
 
 namespace WgClientConig_Updater
 {
     internal class Program
-    {
-        
+    {  
         static void Main(string[] args)
         {
             string IPAddr="::1";
