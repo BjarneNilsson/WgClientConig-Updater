@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "WgClientConig Updater": {
+      "commandName": "Project",
+      "commandLineArgs": "-p 0\r\n-i Ethernet"
+    }
+  }
+}
